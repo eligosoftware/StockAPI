@@ -1,0 +1,23 @@
+https://youtube.com/playlist?list=PL82C6-O4XrHfrGOCPmKmwTO7M0avXyQKc&si=09Gs923F8c_OzrAH
+
+github with frontend (React):
+	https://github.com/teddysmithdev/FinShark
+
+Command to init api folder:
+
+	dotnet new webapi -o api
+
+Run the engine, check if it works:
+	cd api
+	dotnet watch run
+
+EF migration commands
+
+	// generates the code to build the database, here "init" is the name, or tag, that uniquily identifies one migration
+	// next time, if I do a change in DB model, i should change init to something else, init2, init3 or something else meaningful
+	dotnet ef migrations add init
+
+	// actually builds the database based on the previously generated code
+	dotnet ef database update
+
+DTO - Data Transfer Object
