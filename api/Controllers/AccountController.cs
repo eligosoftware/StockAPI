@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.Dtos.Account;
 using api.Interfaces;
 using api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -39,19 +40,22 @@ namespace api.Controllers
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
             if (!result.Succeeded) return Unauthorized("Username not found and/or password is incorrect!");
-
+            await _signInManager.RefreshSignInAsync(user);
+            
             return Ok(
 
                 new NewUserDTO{
                     UserName = user.UserName,
                     Email = user.Email,
-                    Token = _tokenService.CreateToken(user)
+                    Token = await _tokenService.CreateToken(userManager,user)
                 }
             );
 
         }
 
         [HttpPost("register")]
+        // [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto){
             
             try{
@@ -69,11 +73,12 @@ namespace api.Controllers
                         var roleResult = await userManager.AddToRoleAsync(appUser,"User");
 
                         if (roleResult.Succeeded){
+                            
                             return Ok(
                                 new NewUserDTO{
                                     UserName = appUser.UserName,
                                     Email = appUser.Email,
-                                    Token = _tokenService.CreateToken(appUser)
+                                    Token = await _tokenService.CreateToken(userManager,appUser)
                                 }
                             );
                         }
